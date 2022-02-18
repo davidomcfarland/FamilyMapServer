@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Objects;
+
 /**
  * <h2>Java Implementation of Person Schema</h2>
  */
@@ -57,6 +59,32 @@ public class Person {
         this.fatherID = fatherID;
         this.motherID = motherID;
         this.spouseID = spouseID;
+    }
+
+    // Equals method
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj==null || getClass() != obj.getClass()){
+            return false;
+        }
+        if (obj == this){
+            return true;
+        }
+
+        Person prsn = (Person) obj;
+
+        return (
+            Objects.equals(personID, prsn.getPersonID()) &&
+            Objects.equals(associatedUsername, prsn.associatedUsername) &&
+            Objects.equals(firstName, prsn.getFirstName()) &&
+            Objects.equals(lastName, prsn.getLastName()) &&
+            gender == prsn.getGender() &&
+            Objects.equals(fatherID, prsn.getFatherID()) &&
+            Objects.equals(motherID, prsn.getMotherID()) &&
+            Objects.equals(spouseID, prsn.getSpouseID())
+        );
     }
 
     // getters and setters
