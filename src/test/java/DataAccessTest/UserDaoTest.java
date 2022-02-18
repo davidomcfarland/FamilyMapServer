@@ -141,16 +141,16 @@ public class UserDaoTest {
             conn.setAutoCommit(false);
             UserDao userDao = new UserDao(conn);
 
-            //userDao.clearUserTable();
+            userDao.clearUserTable();
 
-            int size = -1;
+            int actualSize = -1;
             try (PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM User;")){
                 ResultSet res = stmt.executeQuery();
 
-                while (res.)
+                actualSize = res.getInt(1);
             }
 
-            Assertions.assertEquals(size, 0, "Rows not deleted");
+            Assertions.assertEquals(0, actualSize, "Rows not deleted");
 
             conn.rollback();
         }
