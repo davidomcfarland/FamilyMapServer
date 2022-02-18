@@ -18,7 +18,7 @@ public class PersonDao {
      * Create a new Person DAO using the connection iconn
      * @param iconn existing SQL Database connection
      */
-    PersonDao(Connection iconn){
+    public PersonDao(Connection iconn){
         conn = iconn;
     }
 
