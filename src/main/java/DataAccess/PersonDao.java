@@ -3,6 +3,9 @@ package DataAccess;
 import model.Person;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -27,7 +30,30 @@ public class PersonDao {
      * @param personID The Person's unique ID
      * @return Returns the single Person object with the specified ID (if the person is associated with the current user).
      */
-    public Person getPersonByID(String personID){return null;}
+    public Person getPersonByID(String personID) throws SQLException {
+        String sql = "select * from Person where personID = \"" + personID + "\"";
+
+        Person person;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
+            ResultSet res = stmt.executeQuery();
+
+            if (res.isClosed()){
+                throw new SQLException();
+            }
+
+            String username = res.getString(2);
+            String firstName = res.getString(3);
+            String lastName  = res.getString(4);
+            char gender = res.getString(5).charAt(0);
+            String fatherID = res.getString(6);
+            String motherID = res.getString(7);
+            String spouseID = res.getString(8);
+
+            person = new Person(personID, username, firstName, lastName, gender, fatherID, motherID, spouseID);
+        }
+
+        return person;
+    }
 
     /**
      * Interface with /person
@@ -35,5 +61,40 @@ public class PersonDao {
      */
     public ArrayList<Person> getRelatives(){return null;}
 
-    public Person insertPerson(Person newPerson){return null;}
+    public Person insertPerson(Person newPerson) throws SQLException {
+        
+        StringBuilder sqlbld = new StringBuilder("insert into Person Values (\"");
+        sqlbld.append(newPerson.getPersonID());
+        sqlbld.append("\", \"");
+        sqlbld.append(newPerson.getAssociatedUsername());
+        sqlbld.append("\", \"");
+        sqlbld.append(newPerson.getFirstName());
+        sqlbld.append("\", \"");
+        sqlbld.append(newPerson.getLastName());
+        sqlbld.append("\", \"");
+        sqlbld.append(newPerson.getGender());
+        sqlbld.append("\", \"");
+        sqlbld.append(newPerson.getFatherID());
+        sqlbld.append("\", \"");
+        sqlbld.append(newPerson.getMotherID());
+        sqlbld.append("\", \"");
+        sqlbld.append(newPerson.getSpouseID());
+        sqlbld.append("\")");
+
+        String sql = sqlbld.toString();
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.executeUpdate();
+        }
+        
+        return newPerson;
+    }
+
+    public void clearPersonTable() throws SQLException {
+        String sql = "Delete from Person";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.executeUpdate();
+        }
+    }
 }
