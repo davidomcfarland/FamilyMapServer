@@ -20,6 +20,7 @@ create table Person (
     associatedUsername varchar(255) not null,
     firstName varchar(255) not null,
     lastName varchar(255) not null,
+    gender char(1) not null,
     fatherID varchar(255),
     motherID varchar(255),
     spouseID varchar(255),
