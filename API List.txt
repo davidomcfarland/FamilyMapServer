@@ -1,0 +1,13 @@
+/user/register
+/user/login
+
+/fill/[username]/{generations}
+
+/clear
+/load
+
+/person/[personID]
+/person
+
+/event/[eventID]
+/event
