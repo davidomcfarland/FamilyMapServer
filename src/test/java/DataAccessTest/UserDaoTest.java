@@ -3,69 +3,33 @@ package DataAccessTest;
 import DataAccess.UserDao;
 import model.User;
 import org.junit.jupiter.api.*;
-
-import java.io.File;
 import java.sql.*;
-import java.util.Scanner;
+
+import static global.ProjectData.dbPath;
 
 public class UserDaoTest {
     @BeforeAll
     static void allPrep(){
-        Connection conn = null;
-        try (Connection c = DriverManager.getConnection("jdbc:sqlite:db/database.db")){
-            conn = c;
-
-            try (Scanner scanner = new Scanner(new File("sql_files" + File.separator + "test" + File.separator + "FillTables.sql"))) {
-                while (scanner.hasNext()) {
-                    try (PreparedStatement stmt = conn.prepareStatement(scanner.useDelimiter("\r\n").next())){
-                        stmt.executeUpdate();
-                    }
-                }
-            }
-
-
-        }
-        catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            Assertions.fail();
-        }
-    }
-
-    @BeforeEach
-    void testPrep() {
+        FakeEntries.fill();
     }
 
     @AfterAll
-    public static void testCleanup(){
-        //Connection conn = null;
-        //try (Connection c = DriverManager.getConnection("jdbc:sqlite:db/database.db")){
-        //    conn = c;
-        //    String sql;
-        //    try (Scanner scanner = new Scanner(new File("sql_files" + File.separator + "test" + File.separator + "ClearTables.sql"))) {
-        //       sql = scanner.useDelimiter("\\A").next();
-        //    }
-        //
-        //    try (PreparedStatement stmt = conn.prepareStatement(sql)){
-        //        stmt.executeUpdate();
-        //    }
-        //}
-        //catch (Exception ex){
-        //    Assertions.fail(ex.getMessage());
-        //}
+    public static void allCleanup(){
+        FakeEntries.remove();
     }
 
     @DisplayName("Retrieval method positive test case")
     @Test
     void positiveRetrieval(){
         Connection conn = null;
-        try (Connection c = DriverManager.getConnection("jdbc:sqlite:db/database.db")){
+        try (Connection c = DriverManager.getConnection(dbPath)){
             conn = c;
 
             UserDao userDao = new UserDao(conn);
 
-            User actual = userDao.getUser("alpha");
+            User actual = userDao.getUser("alpha_dave_fakedata");
 
-            User expected = new User("alpha", "alphapassword", "alpha@domain.com", "alphafirstName", "alphaLastName", 'm');
+            User expected = new User("alpha_dave_fakedata", "alphapassword", "alpha@domain.com", "alphafirstName", "alphaLastName", 'm');
 
             Assertions.assertEquals(expected, actual, "Objects are not the same:");
         }
@@ -77,7 +41,7 @@ public class UserDaoTest {
     @DisplayName("Retrieval method negative test case")
     @Test
     void negativeRetrieval() throws SQLException {
-        Connection conn = DriverManager.getConnection("jdbc:sqlite:db/database.db");
+        Connection conn = DriverManager.getConnection(dbPath);
         UserDao userDao = new UserDao(conn);
 
         Assertions.assertThrows(SQLException.class, () -> userDao.getUser("not a real username"));
@@ -89,7 +53,7 @@ public class UserDaoTest {
         User inputUser = new User("davidomcfarland", "123456789", "davidomcfarland@gmail.com", "David", "McFarland", 'm');
         User newUser = null;
         Connection conn = null;
-        try (Connection c = DriverManager.getConnection("jdbc:sqlite:db/database.db")) {
+        try (Connection c = DriverManager.getConnection(dbPath)) {
             conn = c;
             UserDao userDao = new UserDao(conn);
 
@@ -116,7 +80,7 @@ public class UserDaoTest {
         User newUser = null;
         Connection conn = null;
 
-        try (Connection c = DriverManager.getConnection("jdbc:sqlite:db/database.db")) {
+        try (Connection c = DriverManager.getConnection(dbPath)) {
             conn = c;
             UserDao userDao = new UserDao(conn);
 
@@ -136,7 +100,7 @@ public class UserDaoTest {
     void clearTest(){
         Connection conn = null;
 
-        try (Connection c = DriverManager.getConnection("jdbc:sqlite:db/database.db")){
+        try (Connection c = DriverManager.getConnection(dbPath)){
             conn = c;
             conn.setAutoCommit(false);
             UserDao userDao = new UserDao(conn);
