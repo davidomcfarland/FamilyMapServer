@@ -16,7 +16,6 @@ public class makeTables {
             File file = new File("db/CreateTables.sql");
             Scanner scanner = new Scanner(file);
             while (scanner.hasNext()){
-                System.out.println("here");
                 try (PreparedStatement stmt = conn.prepareStatement(scanner.useDelimiter(";\\s*").next())){
                     stmt.executeUpdate();
                 }
