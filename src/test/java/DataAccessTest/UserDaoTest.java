@@ -1,6 +1,8 @@
 package DataAccessTest;
 
+import DataAccess.NotFoundException;
 import DataAccess.UserDao;
+import model.Authtoken;
 import model.User;
 import org.junit.jupiter.api.*;
 import java.sql.*;
@@ -128,5 +130,86 @@ public class UserDaoTest {
             }
             Assertions.fail(ex.getMessage());
         }
+
+        FakeEntries.fill();
     }
+
+    @DisplayName("Login User Positives")
+    @Test
+    void loginPositive(){
+
+        Connection conn = null;
+
+        try (Connection c = DriverManager.getConnection(dbPath)){
+            conn = c;
+
+            conn.setAutoCommit(false);
+
+            UserDao userDao = new UserDao(conn);
+
+            Authtoken auth1 = userDao.loginUser("alpha_dave_fakedata", "alphapassword");
+            Authtoken auth2 = userDao.loginUser("beta_dave_fakedata", "betapassword");
+            Authtoken auth3 = userDao.loginUser("gamma_dave_fakedata", "gammapassword");
+
+            Assertions.assertNotNull(auth1);
+            Assertions.assertNotNull(auth2);
+            Assertions.assertNotNull(auth3);
+
+            Assertions.assertNotEquals(auth1, auth2);
+            Assertions.assertNotEquals(auth1, auth3);
+            Assertions.assertNotEquals(auth2, auth3);
+
+            conn.rollback();
+        }
+        catch (Exception ex) {
+            try {
+                conn.rollback();
+            }
+            catch (Exception ex2){
+                // do nothing, there wasn't a connection to roll back
+            }
+            Assertions.fail(ex.getMessage());
+        }
+    }
+
+    @DisplayName("Login User Negatives")
+    @Test
+    void wrongLogin(){
+        Connection conn = null;
+
+        try (Connection c = DriverManager.getConnection(dbPath)) {
+            conn = c;
+
+            conn.setAutoCommit(false);
+
+            UserDao userDao = new UserDao(conn);
+
+            Assertions.assertThrows(NotFoundException.class, () -> userDao.loginUser("WRONGUSERNMAE", "alphapassword"));
+            Assertions.assertThrows(NotFoundException.class, () -> userDao.loginUser("alpha_dave_fakedata", "WRONGPASSWORD"));
+            Assertions.assertThrows(NotFoundException.class, () -> userDao.loginUser("WRONGUSERNAME", "WRONGPASSWORD"));
+
+            conn.rollback();
+        }
+        catch (Exception ex){
+            try {
+                conn.rollback();
+            }
+            catch (Exception ex2){
+                // do nothing, conn is null
+            }
+
+            Assertions.fail(ex.getMessage());
+        }
+    }
+
+    @DisplayName("Fill User Positive")
+    @Test
+    void fillPositive(){Assertions.fail();}
+
+    @DisplayName("Fill user Negative")
+    @Test
+    void fillNegative(){Assertions.fail();}
+
+
+
 }

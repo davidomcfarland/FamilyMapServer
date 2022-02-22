@@ -69,7 +69,25 @@ public class UserDao {
      * @param password The user's password
      * @return Returns an authtoken for a new session
      */
-    public Authtoken loginUser(String username, String password){return null;}
+    public Authtoken loginUser(String username, String password) throws SQLException, NotFoundException {
+        String sql = "select * from User where username = \"" + username + "\" and password = \"" + password + "\"";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
+            ResultSet res = stmt.executeQuery();
+
+            if (res.isClosed()){
+                throw  new NotFoundException("Username and Password Combination does not correspond to any users.");
+            }
+
+            Authtoken newAuth = new Authtoken(UUID.randomUUID().toString().replaceAll("-", ""), username);
+
+            AuthtokenDao authtokenDao = new AuthtokenDao(conn);
+
+            authtokenDao.add(newAuth);
+
+            return newAuth;
+        }
+    }
 
     /**
      * Interface with /fill/[username]/{generations}
@@ -77,7 +95,9 @@ public class UserDao {
      * @param username The required "username" parameter must be a user already registered with the server.
      * @param generations The optional "generations" parameter lets the caller specify the number of generations of ancestors to be generated, and must be a non-negative integer (the default is 4, which results in 31 new persons each with associated events).
      */
-    public void fillUser(String username, int generations){}
+    public void fillUser(String username, int generations){
+        String sql = "delete from person where associated username = \"" + username + "\"";
+    }
     /**
      * Interface with /fill/[username]/{generations}
      * Populates the server's database with generated data for the specified username. If there is any data in the database already associated with the given username, it is deleted.
