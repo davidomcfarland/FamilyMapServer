@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * <h2>Java Implementation of Person Schema</h2>
  */
-public class Person {
+public class Person implements Comparable<Person>{
     /**
      * Unique identifier for this person
      */
@@ -50,7 +50,7 @@ public class Person {
      * @param motherID
      * @param spouseID
      */
-    public Person(String personID, String associatedUsername, String firstName, String lastName, char gender, String fatherID, String motherID, String spouseID) {
+    public Person(String personID, String associatedUsername, String firstName, String lastName, char gender, String fatherID, String motherID, String spouseID){
         this.personID = personID;
         this.associatedUsername = associatedUsername;
         this.firstName = firstName;
@@ -59,6 +59,17 @@ public class Person {
         this.fatherID = fatherID;
         this.motherID = motherID;
         this.spouseID = spouseID;
+    }
+
+    public Person(String personID, String associatedUsername, String firstName, String lastName, char gender){
+        this.personID = personID;
+        this.associatedUsername = associatedUsername;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.gender = gender;
+        this.fatherID = null;
+        this.motherID = null;
+        this.spouseID = null;
     }
 
     // Equals method
@@ -75,17 +86,19 @@ public class Person {
 
         Person prsn = (Person) obj;
 
-        return (
-            Objects.equals(personID, prsn.getPersonID()) &&
-            Objects.equals(associatedUsername, prsn.associatedUsername) &&
-            Objects.equals(firstName, prsn.getFirstName()) &&
-            Objects.equals(lastName, prsn.getLastName()) &&
-            gender == prsn.getGender() &&
-            Objects.equals(fatherID, prsn.getFatherID()) &&
-            Objects.equals(motherID, prsn.getMotherID()) &&
-            Objects.equals(spouseID, prsn.getSpouseID())
-        );
+        boolean isEqual = Objects.equals(personID, prsn.getPersonID());
+        isEqual = isEqual && Objects.equals(associatedUsername, prsn.associatedUsername);
+        isEqual = isEqual && Objects.equals(firstName, prsn.getFirstName());
+        isEqual = isEqual && Objects.equals(lastName, prsn.getLastName());
+        isEqual = isEqual && gender == prsn.getGender();
+        isEqual = isEqual && Objects.equals(fatherID, prsn.getFatherID());
+        isEqual = isEqual && Objects.equals(motherID, prsn.getMotherID());
+        isEqual = isEqual && Objects.equals(spouseID, prsn.getSpouseID());
+
+        return isEqual;
     }
+
+
 
     // getters and setters
     public String getPersonID() {
@@ -129,6 +142,7 @@ public class Person {
     }
 
     public String getFatherID() {
+        if (fatherID != null && fatherID.equalsIgnoreCase("null")){fatherID = null;}
         return fatherID;
     }
 
@@ -137,6 +151,7 @@ public class Person {
     }
 
     public String getMotherID() {
+        if (motherID != null && motherID.equalsIgnoreCase("null")){motherID = null;}
         return motherID;
     }
 
@@ -145,10 +160,16 @@ public class Person {
     }
 
     public String getSpouseID() {
+        if (spouseID != null && spouseID.equalsIgnoreCase("null")){spouseID = null;}
         return spouseID;
     }
 
     public void setSpouseID(String spouseID) {
         this.spouseID = spouseID;
+    }
+
+    @Override
+    public int compareTo(Person person) {
+        return personID.compareTo(person.getPersonID());
     }
 }

@@ -2,10 +2,7 @@ package DataAccess;
 
 import model.Person;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 
 /**
@@ -59,7 +56,29 @@ public class PersonDao {
      * Interface with /person
      * @return Returns ALL family members of the current user.
      */
-    public ArrayList<Person> getRelatives(){return null;}
+    public ArrayList<Person> getRelatives(String username) throws SQLException{
+        String sql = "select * from Person where associatedUsername = \"" + username + "\"";
+
+        ArrayList<Person> relatives = new ArrayList<>();
+        try (PreparedStatement stmt = conn.prepareStatement(sql)){
+            ResultSet res = stmt.executeQuery();
+
+            while (res.next()){
+                String personID = res.getString(1);
+                String associatedUsername = res.getString(2);
+                String firstName = res.getString(3);
+                String lastName = res.getString(4);
+                char gender = res.getString(5).charAt(0);
+                String fatherID = res.getString(6);
+                String motherID = res.getString(7);
+                String spouseID = res.getString(8);
+
+                relatives.add(new Person(personID, associatedUsername, firstName, lastName, gender, fatherID, motherID, spouseID));
+            }
+        }
+
+        return relatives;
+    }
 
     public Person insertPerson(Person newPerson) throws SQLException {
         
